@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+#
+# USAGE:
+#
+#   ast_to_graphziv path/to/file
+#
+
+require_relative './core'
+require 'parser/current'
+require 'pry'
+require 'date'
+# require 'ruby-graphviz'
+require 'graphviz'
+
+begin
+  source = File.read(ARGV[0])
+  file_name = "output/#{ARGV[1] || 'ast_graph'}_#{DateTime.now.strftime('%Y_%m_%d_%H_%M_%S')}.png"
+
+  ast = Parser::CurrentRuby.parse(source)
+  core = Core.new(ast)
+
+  # expected = core.expected
+  # expected.output(png: 'expected.png')
+
+  core.poc
+  ::Graphviz::output(core.graph, path: 'graph.pdf')
+
+  # poc = core.poc
+  # poc.output(png: "poc_#{DateTime.now.strftime('%Y_%m_%d_%H_%M_%S')}.png" )
+  # p core.node_types.uniq
+
+  # puts "\n#{ast}\n"
+
+  # result = Core.new(ast).visualize
+  # result.output(png: file_name)
+  # puts "\nWrote #{file_name}"
+rescue => e
+  puts e.message
+
+  binding.pry
+  exit!
+end
